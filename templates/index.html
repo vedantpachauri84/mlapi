@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>SkillPredict AI</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+</head>
+
+<body>
+
+<div class="page">
+
+    <!-- HEADER -->
+
+    <header class="header">
+
+        <div class="brand">
+            <div class="logo">SP</div>
+
+            <div>
+                <h1>SkillPredict AI</h1>
+                <p>Employment Intelligence Engine</p>
+            </div>
+        </div>
+
+        <div class="status">
+            <span></span>
+            ML ENGINE ONLINE
+        </div>
+
+    </header>
+
+
+    <!-- MAIN -->
+
+    <main>
+
+        <section class="hero">
+
+            <div>
+                <div class="tag">
+                    AI-POWERED SKILL INTELLIGENCE
+                </div>
+
+                <h2>
+                    Predict employment readiness
+                    before the outcome happens.
+                </h2>
+
+                <p>
+                    Machine-learning powered decision support
+                    for skilling and employment programs.
+                </p>
+            </div>
+
+        </section>
+
+
+        <!-- TRAINEE CARD -->
+
+        <section class="card">
+
+            <div class="card-title">
+
+                <div>
+                    <h3>Trainee Analysis</h3>
+
+                    <p>
+                        Select a trainee to analyze employment readiness.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <label for="trainee">
+                Select Trainee
+            </label>
+
+            <select id="trainee"
+                    onchange="loadTrainee()">
+
+                <option value="">
+                    Select a trainee
+                </option>
+
+                <option
+                    value="Rahul Sharma"
+                    data-attendance="92"
+                    data-assessment="84"
+                    data-practical="72"
+                    data-completion="95"
+                    data-experience="0">
+
+                    Rahul Sharma
+                </option>
+
+                <option
+                    value="Priya Patil"
+                    data-attendance="97"
+                    data-assessment="91"
+                    data-practical="89"
+                    data-completion="100"
+                    data-experience="1">
+
+                    Priya Patil
+                </option>
+
+                <option
+                    value="Amit Kumar"
+                    data-attendance="68"
+                    data-assessment="55"
+                    data-practical="48"
+                    data-completion="74"
+                    data-experience="0">
+
+                    Amit Kumar
+                </option>
+
+                <option
+                    value="Sneha Joshi"
+                    data-attendance="81"
+                    data-assessment="73"
+                    data-practical="58"
+                    data-completion="88"
+                    data-experience="0">
+
+                    Sneha Joshi
+                </option>
+
+            </select>
+
+
+            <!-- INPUTS -->
+
+            <div class="metrics">
+
+                <div class="metric">
+                    <span>Attendance</span>
+                    <strong id="attendance">--</strong>
+                </div>
+
+                <div class="metric">
+                    <span>Assessment</span>
+                    <strong id="assessment">--</strong>
+                </div>
+
+                <div class="metric">
+                    <span>Practical</span>
+                    <strong id="practical">--</strong>
+                </div>
+
+                <div class="metric">
+                    <span>Completion</span>
+                    <strong id="completion">--</strong>
+                </div>
+
+            </div>
+
+
+            <div class="experience">
+
+                <span>Previous Experience</span>
+
+                <strong id="experience">
+                    --
+                </strong>
+
+            </div>
+
+
+            <button id="predictButton"
+                    onclick="predict()"
+                    disabled>
+
+                ANALYZE TRAINEE
+            </button>
+
+        </section>
+
+
+        <!-- RESULT -->
+
+        <section id="result"
+                 class="result hidden">
+
+            <div class="result-header">
+
+                <div>
+                    <div class="tag">
+                        ML PREDICTION
+                    </div>
+
+                    <h3>
+                        Employment Readiness
+                    </h3>
+                </div>
+
+                <div id="risk"
+                     class="risk">
+                    --
+                </div>
+
+            </div>
+
+
+            <div class="prediction-score">
+
+                <div class="score"
+                     id="probability">
+
+                    0%
+                </div>
+
+                <div>
+
+                    <h4 id="outcome">
+                        --
+                    </h4>
+
+                    <p>
+                        Predicted employment probability
+                        based on trainee performance.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="result-grid">
+
+                <div class="result-box">
+
+                    <span>Skill Gap</span>
+
+                    <div id="skillGaps">
+                        --
+                    </div>
+
+                </div>
+
+
+                <div class="result-box">
+
+                    <span>Recommended Intervention</span>
+
+                    <div id="recommendations">
+                        --
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- EXPLANATION -->
+
+        <section class="info">
+
+            <div>
+                <strong>How it works</strong>
+
+                <p>
+                    Trainee performance data is processed by
+                    the Random Forest ML model. The system
+                    predicts employment readiness, identifies
+                    potential skill gaps and recommends
+                    targeted interventions.
+                </p>
+            </div>
+
+            <div>
+                <strong>Reusable AI Service</strong>
+
+                <p>
+                    SkillPredict AI is exposed through a REST
+                    API, allowing other education, government
+                    and skilling platforms to integrate the
+                    same intelligence.
+                </p>
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+        SkillPredict AI · ML Decision Support System
+    </footer>
+
+</div>
+
+
+<script>
+
+let selectedTrainee = null;
+
+
+function loadTrainee() {
+
+    const select =
+        document.getElementById("trainee");
+
+    const option =
+        select.options[select.selectedIndex];
+
+    if (!option.value) {
+
+        selectedTrainee = null;
+
+        document.getElementById("predictButton")
+            .disabled = true;
+
+        resetMetrics();
+
+        return;
+    }
+
+
+    selectedTrainee = option;
+
+
+    document.getElementById("attendance")
+        .textContent =
+        option.dataset.attendance + "%";
+
+    document.getElementById("assessment")
+        .textContent =
+        option.dataset.assessment + "%";
+
+    document.getElementById("practical")
+        .textContent =
+        option.dataset.practical + "%";
+
+    document.getElementById("completion")
+        .textContent =
+        option.dataset.completion + "%";
+
+
+    document.getElementById("experience")
+        .textContent =
+        option.dataset.experience === "1"
+            ? "Yes"
+            : "No";
+
+
+    document.getElementById("predictButton")
+        .disabled = false;
+
+
+    document.getElementById("result")
+        .classList.add("hidden");
+}
+
+
+function resetMetrics() {
+
+    document.getElementById("attendance")
+        .textContent = "--";
+
+    document.getElementById("assessment")
+        .textContent = "--";
+
+    document.getElementById("practical")
+        .textContent = "--";
+
+    document.getElementById("completion")
+        .textContent = "--";
+
+    document.getElementById("experience")
+        .textContent = "--";
+}
+
+
+async function predict() {
+
+    if (!selectedTrainee) {
+        return;
+    }
+
+
+    const button =
+        document.getElementById("predictButton");
+
+
+    button.disabled = true;
+    button.textContent = "ANALYZING...";
+
+
+    const data = {
+
+        attendance:
+            Number(selectedTrainee.dataset.attendance),
+
+        assessment:
+            Number(selectedTrainee.dataset.assessment),
+
+        practical:
+            Number(selectedTrainee.dataset.practical),
+
+        completion:
+            Number(selectedTrainee.dataset.completion),
+
+        experience:
+            Number(selectedTrainee.dataset.experience)
+    };
+
+
+    try {
+
+        const response =
+            await fetch("/predict", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify(data)
+            });
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Prediction request failed"
+            );
+        }
+
+
+        const result =
+            await response.json();
+
+
+        displayResult(result);
+
+
+    } catch (error) {
+
+        alert(
+            "Unable to connect to the ML engine."
+        );
+
+        console.error(error);
+
+    } finally {
+
+        button.disabled = false;
+        button.textContent = "ANALYZE TRAINEE";
+    }
+}
+
+
+function displayResult(result) {
+
+    document.getElementById("result")
+        .classList.remove("hidden");
+
+
+    document.getElementById("probability")
+        .textContent =
+        result.employment_probability + "%";
+
+
+    document.getElementById("outcome")
+        .textContent =
+        result.outcome;
+
+
+    const risk =
+        document.getElementById("risk");
+
+    risk.textContent =
+        result.risk.toUpperCase();
+
+
+    risk.className =
+        "risk " +
+        result.risk.toLowerCase();
+
+
+    document.getElementById("skillGaps")
+        .innerHTML =
+        result.skill_gaps
+            .map(gap => `<div>• ${gap}</div>`)
+            .join("");
+
+
+    document.getElementById("recommendations")
+        .innerHTML =
+        result.recommendations
+            .map(item => `<div>→ ${item}</div>`)
+            .join("");
+
+
+    document.getElementById("result")
+        .scrollIntoView({
+            behavior: "smooth"
+        });
+}
+
+</script>
+
+</body>
+</html>
